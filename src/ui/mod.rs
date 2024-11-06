@@ -1,6 +1,8 @@
 use eframe::CreationContext;
-use egui::{vec2, CentralPanel, Context, TextEdit, TextStyle};
+use egui::{vec2, CentralPanel, Context, Id, PopupCloseBehavior, TextEdit, TextStyle};
 use egui_notify::Toasts;
+use once_cell::sync::Lazy;
+use serde::{Deserialize, Serialize};
 use statusbar::StatusBar;
 
 use crate::data::{Item, List};
@@ -8,17 +10,25 @@ use crate::data::{Item, List};
 mod statusbar;
 
 pub const PLUS: &str = egui_phosphor::regular::PLUS;
+pub static APP_KEY: Lazy<String> = Lazy::new(|| format!("app-{}", env!("CARGO_PKG_NAME")));
 
+#[derive(Deserialize, Serialize, Default)]
+#[serde(default)]
 pub struct App {
     list: List,
     new_item: Item,
     statusbar: StatusBar,
+    #[serde(skip)]
+    #[serde(default = "create_toasts")]
     toasts: Toasts,
 }
 
+pub const fn create_toasts() -> Toasts {
+    Toasts::new().with_anchor(egui_notify::Anchor::BottomRight)
+}
+
 impl App {
-    pub fn new(cc: &CreationContext, list: List) -> Self {
-        // egui_extras::install_image_loaders(&cc.egui_ctx);
+    pub fn new(cc: &CreationContext) -> Self {
         cc.egui_ctx.style_mut(|s| {
             s.text_styles.insert(
                 TextStyle::Name("subheading".into()),
@@ -34,12 +44,12 @@ impl App {
 
         cc.egui_ctx.set_fonts(fonts);
 
-        Self {
-            list,
-            new_item: Item::default(),
-            statusbar: StatusBar::new(),
-            toasts: Toasts::new().with_anchor(egui_notify::Anchor::BottomRight),
+        // Load previous app state (if any).
+        if let Some(storage) = cc.storage {
+            return eframe::get_value(storage, &APP_KEY).unwrap_or_default();
         }
+
+        Self::default()
     }
 }
 
@@ -60,9 +70,8 @@ impl eframe::App for App {
                 for category in &mut self.list.categories {
                     ui.vertical(|ui| {
                         ui.horizontal(|ui| {
-                            let mut category_name = category.name.clone();
                             ui.add(
-                                TextEdit::singleline(&mut category_name)
+                                TextEdit::singleline(&mut category.name)
                                     .hint_text("Category")
                                     .desired_width(150.0),
                             );
@@ -84,9 +93,9 @@ impl eframe::App for App {
                                 // Notes popup
                                 egui::popup::popup_below_widget(
                                     ui,
-                                    egui::Id::new(item.name.clone()),
+                                    Id::new(item.name.clone()),
                                     &ui.response(),
-                                    egui::PopupCloseBehavior::CloseOnClick,
+                                    PopupCloseBehavior::CloseOnClickOutside,
                                     |ui| {
                                         ui.set_min_width(200.0);
                                         ui.label("Notes:");
@@ -96,7 +105,7 @@ impl eframe::App for App {
                             });
                         }
 
-                        let id = egui::Id::new(format!("Add item to {}", category.name));
+                        let id = Id::new(format!("Add item to {}", category.name));
                         ui.button(format!("{PLUS} Add item"))
                             .on_hover_text("Add a new item")
                             .clicked()
@@ -110,7 +119,7 @@ impl eframe::App for App {
                             ui,
                             id,
                             &ui.response(),
-                            egui::PopupCloseBehavior::CloseOnClickOutside,
+                            PopupCloseBehavior::CloseOnClickOutside,
                             |ui| {
                                 ui.set_min_width(200.0);
                                 ui.label("Add item:");
@@ -135,5 +144,9 @@ impl eframe::App for App {
             });
         });
         self.toasts.show(ctx);
+    }
+
+    fn save(&mut self, storage: &mut dyn eframe::Storage) {
+        eframe::set_value(storage, eframe::APP_KEY, self);
     }
 }

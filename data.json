@@ -1,3 +1,14 @@
 {
-  "categories": []
+  "categories": [
+    {
+      "name": "asd",
+      "items": [
+        {
+          "name": "asd",
+          "todo": false,
+          "notes": "sd"
+        }
+      ]
+    }
+  ]
 }
