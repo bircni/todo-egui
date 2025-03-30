@@ -28,7 +28,7 @@ pub const fn create_toasts() -> Toasts {
 }
 
 impl App {
-    pub fn new(cc: &CreationContext) -> Self {
+    pub fn new(cc: &CreationContext<'_>) -> Self {
         cc.egui_ctx.style_mut(|s| {
             s.text_styles.insert(
                 TextStyle::Name("subheading".into()),
@@ -55,7 +55,6 @@ impl App {
 
 /// Main application loop (called every frame)
 impl eframe::App for App {
-    #[allow(clippy::significant_drop_in_scrutinee)]
     fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
         CentralPanel::default().show(ctx, |ui| {
             self.statusbar.show(ui, &mut self.list).unwrap_or_else(|e| {
@@ -66,8 +65,10 @@ impl eframe::App for App {
                 ui.separator();
             });
 
+            let mut delete_category = None;
             ui.horizontal(|ui| {
                 for category in &mut self.list.categories {
+                    let mut delete_item = None;
                     ui.vertical(|ui| {
                         ui.horizontal(|ui| {
                             ui.add(
@@ -75,8 +76,11 @@ impl eframe::App for App {
                                     .hint_text("Category")
                                     .desired_width(150.0),
                             );
+                            ui.button("❌")
+                                .on_hover_text("Delete category")
+                                .clicked()
+                                .then(|| delete_category = Some(category.name.clone()));
                         });
-
                         for item in &mut category.items {
                             ui.horizontal(|ui| {
                                 ui.checkbox(&mut item.todo, &item.name);
@@ -89,6 +93,10 @@ impl eframe::App for App {
                                             m.toggle_popup(egui::Id::new(&item.name));
                                         });
                                     });
+                                ui.button("❌")
+                                    .on_hover_text("Delete item")
+                                    .clicked()
+                                    .then(|| delete_item = Some(item.name.clone()));
 
                                 // Notes popup
                                 egui::popup::popup_below_widget(
@@ -103,6 +111,10 @@ impl eframe::App for App {
                                     },
                                 );
                             });
+                        }
+
+                        if let Some(delete) = delete_item {
+                            category.items.retain(|i| i.name != delete);
                         }
 
                         let id = Id::new(format!("Add item to {}", category.name));
@@ -140,6 +152,9 @@ impl eframe::App for App {
                             },
                         );
                     });
+                }
+                if let Some(delete) = delete_category {
+                    self.list.categories.retain(|c| c.name != delete);
                 }
             });
         });
