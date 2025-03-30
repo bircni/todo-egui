@@ -2,6 +2,8 @@ use anyhow::Context;
 use egui::ViewportBuilder;
 
 mod data;
+#[cfg(test)]
+mod test;
 mod ui;
 
 fn main() -> anyhow::Result<()> {

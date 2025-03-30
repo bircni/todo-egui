@@ -105,7 +105,7 @@ impl StatusBar {
             });
 
             ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                ui.add(Button::new(" ? ").rounding(40.0))
+                ui.add(Button::new(" ? ").corner_radius(40.0))
                     .clicked()
                     .then(|| self.show_about = true);
 

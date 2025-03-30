@@ -1,0 +1,18 @@
+{
+  "categories": [
+    {
+      "name": "category 1",
+      "items": [
+        {
+          "name": "item 1",
+          "todo": true,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "name": "",
+      "items": []
+    }
+  ]
+}
