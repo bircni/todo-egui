@@ -2,7 +2,7 @@ use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 
 use egui::Context;
-use egui::{special_emojis::GITHUB, vec2, Align, Align2, Button, Frame, Layout, Ui, Window};
+use egui::{Align, Align2, Button, Frame, Layout, Ui, Window, special_emojis::GITHUB, vec2};
 use egui_file::{DialogType, FileDialog};
 use serde::{Deserialize, Serialize};
 
