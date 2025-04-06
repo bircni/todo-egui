@@ -1,8 +1,8 @@
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 
-use egui::Context;
 use egui::{Align, Align2, Button, Frame, Layout, Ui, Window, special_emojis::GITHUB, vec2};
+use egui::{Context, Image, include_image};
 use egui_file::{DialogType, FileDialog};
 use serde::{Deserialize, Serialize};
 
@@ -129,11 +129,11 @@ impl StatusBar {
             .frame(Frame::window(ui.style()).fill(ui.style().visuals.widgets.open.weak_bg_fill))
             .show(ui.ctx(), |ui| {
                 ui.vertical_centered(|ui| {
-                    // ui.add(
-                    //     Image::new(include_image!("../../res/icon.png"))
-                    //         .shrink_to_fit()
-                    //         .rounding(10.0),
-                    // );
+                    ui.add(
+                        Image::new(include_image!("../../res/icon.png"))
+                            .shrink_to_fit()
+                            .corner_radius(10.0),
+                    );
 
                     ui.label(format!("{}: {}", "Version", env!("CARGO_PKG_VERSION")));
                     ui.hyperlink_to(

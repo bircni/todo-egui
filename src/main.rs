@@ -5,6 +5,8 @@ mod data;
 #[cfg(test)]
 mod test;
 mod ui;
+#[cfg(test)]
+mod ui_test;
 
 fn main() -> anyhow::Result<()> {
     let viewport = ViewportBuilder::default()

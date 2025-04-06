@@ -29,6 +29,7 @@ pub const fn create_toasts() -> Toasts {
 
 impl App {
     pub fn new(cc: &CreationContext<'_>) -> Self {
+        egui_extras::install_image_loaders(&cc.egui_ctx);
         cc.egui_ctx.style_mut(|s| {
             s.text_styles.insert(
                 TextStyle::Name("subheading".into()),
@@ -51,11 +52,8 @@ impl App {
 
         Self::default()
     }
-}
 
-/// Main application loop (called every frame)
-impl eframe::App for App {
-    fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
+    pub fn show(&mut self, ctx: &Context) {
         CentralPanel::default().show(ctx, |ui| {
             self.statusbar.show(ui, &mut self.list).unwrap_or_else(|e| {
                 self.toasts.error(e.to_string());
@@ -159,6 +157,13 @@ impl eframe::App for App {
             });
         });
         self.toasts.show(ctx);
+    }
+}
+
+/// Main application loop (called every frame)
+impl eframe::App for App {
+    fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
+        self.show(ctx);
     }
 
     fn save(&mut self, storage: &mut dyn eframe::Storage) {

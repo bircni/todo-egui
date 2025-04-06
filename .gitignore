@@ -5,3 +5,7 @@ Cargo.lock
 *.pdb
 .DS_Store
 test-dir/
+
+**/tests/snapshots/**/*.diff.png
+**/tests/snapshots/**/*.new.png
+**/tests/snapshots/**/*.old.png
