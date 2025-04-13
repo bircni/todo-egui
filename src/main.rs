@@ -5,10 +5,10 @@ mod data;
 #[cfg(test)]
 mod test;
 mod ui;
-#[cfg(test)]
-mod ui_test;
+mod utils;
 
 fn main() -> anyhow::Result<()> {
+    utils::initialize_logger().context("Failed to initialize logger")?;
     let viewport = ViewportBuilder::default()
         .with_title("ToDo App")
         .with_app_id("todo-egui")

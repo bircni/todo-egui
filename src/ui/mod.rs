@@ -3,7 +3,7 @@ use egui::{CentralPanel, Context, Id, PopupCloseBehavior, TextEdit, TextStyle, v
 use egui_notify::Toasts;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
-use statusbar::StatusBar;
+use statusbar::FileLoader;
 
 use crate::data::{Item, List};
 
@@ -17,10 +17,11 @@ pub static APP_KEY: Lazy<String> = Lazy::new(|| format!("app-{}", env!("CARGO_PK
 pub struct App {
     list: List,
     new_item: Item,
-    statusbar: StatusBar,
     #[serde(skip)]
     #[serde(default = "create_toasts")]
     toasts: Toasts,
+    show_about: bool,
+    pub file_loader: FileLoader,
 }
 
 pub const fn create_toasts() -> Toasts {
@@ -47,6 +48,7 @@ impl App {
 
         // Load previous app state (if any).
         if let Some(storage) = cc.storage {
+            log::debug!("Loading app state from storage");
             return eframe::get_value(storage, &APP_KEY).unwrap_or_default();
         }
 
@@ -55,7 +57,7 @@ impl App {
 
     pub fn show(&mut self, ctx: &Context) {
         CentralPanel::default().show(ctx, |ui| {
-            self.statusbar.show(ui, &mut self.list).unwrap_or_else(|e| {
+            self.show_statusbar(ui).unwrap_or_else(|e| {
                 self.toasts.error(e.to_string());
             });
 
@@ -77,7 +79,7 @@ impl App {
                             ui.button("❌")
                                 .on_hover_text("Delete category")
                                 .clicked()
-                                .then(|| delete_category = Some(category.name.clone()));
+                                .then(|| delete_category = Some(category.id));
                         });
                         for item in &mut category.items {
                             ui.horizontal(|ui| {
@@ -88,13 +90,13 @@ impl App {
                                     .clicked()
                                     .then(|| {
                                         ui.memory_mut(|m| {
-                                            m.toggle_popup(egui::Id::new(&item.name));
+                                            m.toggle_popup(egui::Id::new(item.id));
                                         });
                                     });
                                 ui.button("❌")
                                     .on_hover_text("Delete item")
                                     .clicked()
-                                    .then(|| delete_item = Some(item.name.clone()));
+                                    .then(|| delete_item = Some(item.id));
 
                                 // Notes popup
                                 egui::popup::popup_below_widget(
@@ -112,7 +114,7 @@ impl App {
                         }
 
                         if let Some(delete) = delete_item {
-                            category.items.retain(|i| i.name != delete);
+                            category.items.retain(|i| i.id != delete);
                         }
 
                         let id = Id::new(format!("Add item to {}", category.name));
@@ -152,7 +154,7 @@ impl App {
                     });
                 }
                 if let Some(delete) = delete_category {
-                    self.list.categories.retain(|c| c.name != delete);
+                    self.list.categories.retain(|c| c.id != delete);
                 }
             });
         });
@@ -167,6 +169,6 @@ impl eframe::App for App {
     }
 
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
-        eframe::set_value(storage, eframe::APP_KEY, self);
+        eframe::set_value(storage, &APP_KEY, self);
     }
 }

@@ -24,16 +24,45 @@ impl List {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Default, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Category {
     pub name: String,
     pub items: Vec<Item>,
+    #[serde(default = "new_uuid")]
+    pub id: uuid::Uuid,
 }
 
-#[derive(Debug, Serialize, Deserialize, Default, Clone, PartialEq, Eq)]
+impl Default for Category {
+    fn default() -> Self {
+        Self {
+            name: String::new(),
+            items: Vec::new(),
+            id: new_uuid(),
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub struct Item {
     pub name: String,
     pub todo: bool,
     #[serde(default)]
     pub notes: String,
+    #[serde(default = "new_uuid")]
+    pub id: uuid::Uuid,
+}
+
+impl Default for Item {
+    fn default() -> Self {
+        Self {
+            name: String::new(),
+            todo: false,
+            notes: String::new(),
+            id: new_uuid(),
+        }
+    }
+}
+
+fn new_uuid() -> uuid::Uuid {
+    uuid::Uuid::new_v4()
 }
