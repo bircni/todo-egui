@@ -9,6 +9,8 @@ use serde::{Deserialize, Serialize};
 use crate::data::{Category, List};
 use crate::ui::PLUS;
 
+use super::App;
+
 const SAVE: &str = egui_phosphor::regular::FLOPPY_DISK;
 const QUIT: &str = egui_phosphor::regular::SIGN_OUT;
 const LOAD: &str = egui_phosphor::regular::FOLDER_OPEN;
@@ -16,14 +18,7 @@ const NEW: &str = egui_phosphor::regular::FILE_PLUS;
 
 #[derive(Deserialize, Serialize, Default)]
 #[serde(default)]
-pub struct StatusBar {
-    show_about: bool,
-    file_loader: FileLoader,
-}
-
-#[derive(Deserialize, Serialize, Default)]
-#[serde(default)]
-struct FileLoader {
+pub struct FileLoader {
     file_path: Option<PathBuf>,
     #[serde(skip)]
     file_dialog: Option<FileDialog>,
@@ -58,16 +53,16 @@ impl FileLoader {
     }
 }
 
-impl StatusBar {
-    pub fn show(&mut self, ui: &mut Ui, list: &mut List) -> anyhow::Result<()> {
-        let mut ret = self.file_loader.show_file_dialog(ui.ctx(), list);
+impl App {
+    pub fn show_statusbar(&mut self, ui: &mut Ui) -> anyhow::Result<()> {
+        let mut ret = self.file_loader.show_file_dialog(ui.ctx(), &mut self.list);
         self.about_window(ui);
 
         ui.horizontal(|ui| {
             ui.menu_button("File", |ui| {
                 if ui.add(Button::new(format!("{SAVE} Save"))).clicked() {
                     if let Some(path) = &self.file_loader.file_path {
-                        ret = list.write(path, false);
+                        ret = self.list.write(path, false);
                     } else {
                         let mut dialog = FileDialog::save_file(None).show_files_filter(Box::new({
                             let ext = Some(OsStr::new("json"));
@@ -104,6 +99,18 @@ impl StatusBar {
                 }
             });
 
+            if let Some(path) = &self.file_loader.file_path {
+                ui.button("Location")
+                    .on_hover_text("Open the location of the file")
+                    .clicked()
+                    .then(|| {
+                        if let Some(parent) = path.parent() {
+                            if let Err(e) = open::that(parent) {
+                                log::debug!("Failed to open file location: {e}");
+                            }
+                        }
+                    });
+            }
             ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
                 ui.add(Button::new(" ? ").corner_radius(40.0))
                     .clicked()
@@ -112,7 +119,7 @@ impl StatusBar {
                 ui.button(format!("{PLUS} Add category"))
                     .clicked()
                     .then(|| {
-                        list.categories.push(Category::default());
+                        self.list.categories.push(Category::default());
                     });
             })
         });

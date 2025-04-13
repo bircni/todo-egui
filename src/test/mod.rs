@@ -2,6 +2,8 @@ use std::{fs, path::Path};
 
 use crate::data::{Category, Item, List};
 
+mod ui_test;
+
 #[test]
 fn test_list() {
     fs::create_dir_all("test-dir").unwrap_or_else(|e| {

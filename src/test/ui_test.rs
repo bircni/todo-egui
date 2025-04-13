@@ -43,7 +43,7 @@ async fn gpu_available() -> bool {
             force_fallback_adapter: false,
         })
         .await
-        .is_some()
+        .is_ok()
 }
 
 #[tokio::test]
