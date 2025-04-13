@@ -10,7 +10,7 @@ pub fn initialize_logger() -> anyhow::Result<()> {
         LevelFilter::Info,
         ConfigBuilder::new()
             // suppress all logs from dependencies
-            //.add_filter_allow_str("rust_launcher")
+            .add_filter_allow_str("todo_egui")
             .build(),
         TerminalMode::Mixed,
         ColorChoice::Auto,

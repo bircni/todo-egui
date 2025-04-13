@@ -21,14 +21,14 @@ jobs:
           lfs: true
       - uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: 1.85
+          toolchain: 1.86
       - uses: Swatinem/rust-cache@v2
 
       - name: cargo build
         run: cargo build
 
   check:
-    name: Checks
+    name: Check
     runs-on: ubuntu-latest
 
     steps:
@@ -37,43 +37,48 @@ jobs:
           lfs: true
       - uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: 1.85
+          toolchain: 1.86
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
 
-      - name: cargo fmt
+      - name: Check formatting
         run: cargo fmt --all -- --check
 
-      - name: cargo clippy
+      - name: Run Clippy
         run: cargo clippy -- -D warnings
 
-      - name: cargo test
+      - name: Run tests
         run: cargo test
+
+  publish-check:
+    name: Publish Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.86
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fetch
+      - name: cargo publish
+        run: cargo publish --dry-run
 
   typos:
     name: Typos
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: crate-ci/typos@v1.29.8
+      - uses: crate-ci/typos@master
 
   cargo-machete:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: Swatinem/rust-cache@v2
-      - name: Machete
-        uses: bnjbvr/cargo-machete@main
-
-  publish-check:
-    name: Publish Check
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: 1.85
-      - uses: Swatinem/rust-cache@v2
-      - run: cargo fetch
-      - name: cargo publish
-        run: cargo publish --dry-run
+          toolchain: 1.86
+      - name: Install cargo-binstall
+        uses: cargo-bins/cargo-binstall@main
+      - name: Install cargo-shear
+        run: cargo binstall --no-confirm cargo-shear
+      - run: cargo shear

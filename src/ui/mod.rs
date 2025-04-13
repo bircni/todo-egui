@@ -1,16 +1,16 @@
 use eframe::CreationContext;
 use egui::{CentralPanel, Context, Id, PopupCloseBehavior, TextEdit, TextStyle, vec2};
 use egui_notify::Toasts;
-use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use statusbar::FileLoader;
+use std::sync::LazyLock;
 
 use crate::data::{Item, List};
 
 mod statusbar;
 
 pub const PLUS: &str = egui_phosphor::regular::PLUS;
-pub static APP_KEY: Lazy<String> = Lazy::new(|| format!("app-{}", env!("CARGO_PKG_NAME")));
+pub static APP_KEY: LazyLock<String> = LazyLock::new(|| format!("app-{}", env!("CARGO_PKG_NAME")));
 
 #[derive(Deserialize, Serialize, Default)]
 #[serde(default)]
