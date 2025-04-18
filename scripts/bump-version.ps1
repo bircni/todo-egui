@@ -36,7 +36,17 @@ Write-Host "Version updated successfully in Cargo.toml."
 Write-Host "Generating changelog..."
 git cliff --output CHANGELOG.md -t $version
 Write-Host "Changelog generated successfully."
+# Ask for confirmation before committing
+Write-Host "Please review the changes in Cargo.toml and CHANGELOG.md."
+$confirmation = Read-Host "Do you want to commit the changes? (y/n)"
+if ($confirmation -ne 'y') {
+    Write-Host "Changes not committed. Exiting."
+    exit 0
+}
 # Commit the changes
 git add Cargo.toml CHANGELOG.md
 git commit -m "release($version)"
 git tag -a $version -m "Release $version" 
+
+Write-Host "Changes committed and tagged with version $version."
+Write-Host "Please push the changes to the remote repository."

@@ -37,8 +37,18 @@ echo "Version updated successfully in Cargo.toml."
 echo "Generating changelog..."
 git cliff --output CHANGELOG.md -t "$version"
 echo "Changelog generated successfully."
+# Ask for confirmation before committing
+echo "Do you want to commit the changes? (y/n)"
+read -r answer
+if [ "$answer" != "y" ]; then
+    echo "Changes not committed. Exiting."
+    exit 0
+fi
 
 # Commit changes
 git add Cargo.toml CHANGELOG.md
 git commit -m "release($version)"
 git tag -a "$version" -m "Release $version"
+
+echo "Changes committed and tagged with version $version."
+echo "Don't forget to push the changes to the remote repository."

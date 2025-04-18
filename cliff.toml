@@ -9,13 +9,12 @@ repo = "todo-egui"
 # A Tera template to be rendered as the changelog's footer.
 # See https://keats.github.io/tera/docs/#introduction
 header = """
-# Changelog\n
+# Changelog - [todo-egui]($REPO)\n
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.\n
 """
 # A Tera template to be rendered for each release in the changelog.
 # See https://keats.github.io/tera/docs/#introduction
 body = """
----
 
 {% if version %}\
     {% if previous.version %}\
@@ -49,7 +48,7 @@ body = """
 trim = true
 postprocessors = [
     # Replace the placeholder `<REPO>` with a URL.
-    { pattern = '<REPO>', replace = "https://github.com/bircni/todo-egui" }, # replace repository URL
+    { pattern = '\$REPO', replace = "https://github.com/bircni/todo-egui" }, # replace repository URL
 ]
 
 
