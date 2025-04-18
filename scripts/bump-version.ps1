@@ -19,6 +19,13 @@ if (-not (Get-Command cargo-verset -ErrorAction SilentlyContinue)) {
 }
 
 $version = git cliff --bumped-version
+$current_version = git describe --tags
+# Check if the version is already the same as the current version
+if ($version -eq $current_version) {
+    Write-Host "Version is already set to $version. No changes made."
+    exit 0
+}
+
 
 Write-Host "Calculated version: $version"
 Write-Host "Updating version in Cargo.toml..."
@@ -31,5 +38,5 @@ git cliff --output CHANGELOG.md -t $version
 Write-Host "Changelog generated successfully."
 # Commit the changes
 git add Cargo.toml CHANGELOG.md
-git commit -m "chore($version): release $version"
+git commit -m "release($version)"
 git tag -a $version -m "Release $version" 

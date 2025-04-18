@@ -20,6 +20,13 @@ fi
 
 # Get the bumped version from git-cliff
 version=$(git-cliff --bumped-version)
+current_version=$(git describe --tags)
+
+# if the version is the same as the current version, exit
+if [ "$version" == "$current_version" ]; then
+    echo "Version $version is already the current version. No changes made."
+    exit 0
+fi
 
 echo "Calculated version: $version"
 echo "Updating version in Cargo.toml..."
@@ -33,5 +40,5 @@ echo "Changelog generated successfully."
 
 # Commit changes
 git add Cargo.toml CHANGELOG.md
-git commit -m "chore($version): release $version"
+git commit -m "release($version)"
 git tag -a "$version" -m "Release $version"
