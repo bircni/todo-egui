@@ -127,6 +127,11 @@ impl App {
     }
 
     fn about_window(&mut self, ui: &Ui) {
+        let version = if cfg!(test) {
+            "(test build)"
+        } else {
+            env!("CARGO_PKG_VERSION")
+        };
         Window::new("About")
             .resizable(false)
             .collapsible(false)
@@ -142,7 +147,7 @@ impl App {
                             .corner_radius(10.0),
                     );
 
-                    ui.label(format!("{}: {}", "Version", env!("CARGO_PKG_VERSION")));
+                    ui.label(format!("{}: {version}", "Version"));
                     ui.hyperlink_to(
                         format!("{GITHUB} {}", "Github"),
                         "https://github.com/bircni/todo-egui",
