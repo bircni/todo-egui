@@ -1,3 +1,6 @@
+# Enable push with follow tags
+git config --global push.followTags true
+
 # Check if git cliff is installed
 if (-not (Get-Command git-cliff -ErrorAction SilentlyContinue)) {
     Write-Host "git cliff is not installed. Installing it now..."
