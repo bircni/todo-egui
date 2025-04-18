@@ -10,7 +10,7 @@ mod utils;
 fn main() -> anyhow::Result<()> {
     utils::initialize_logger().context("Failed to initialize logger")?;
     let viewport = ViewportBuilder::default()
-        .with_title("ToDo App")
+        .with_title("todo-egui")
         .with_app_id("todo-egui")
         .with_inner_size(egui::vec2(450.0, 300.0))
         .with_icon(
@@ -19,7 +19,7 @@ fn main() -> anyhow::Result<()> {
         );
 
     eframe::run_native(
-        "ToDo App",
+        "todo-egui",
         eframe::NativeOptions {
             viewport,
             centered: true,
