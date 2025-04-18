@@ -1,3 +1,14 @@
+## [0.1.0](https://github.com/bircni/todo-egui/compare/0.0.1..0.1.0) - 2025-04-18
+
+### Features
+
+- Change app name - ([c2aeab7](https://github.com/bircni/todo-egui/commit/c2aeab7f755f5523920209399035be45722e4cbf))
+
+### Tests
+
+- Fix tests - ([ecd3f2f](https://github.com/bircni/todo-egui/commit/ecd3f2fe8112b956840c04e48dfcf3226adc4d6a))
+
+
 ## [0.0.1](https://github.com/bircni/todo-egui/compare/0.0.0..0.0.1) - 2025-04-18
 
 ### Bug Fixes
