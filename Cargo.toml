@@ -12,27 +12,26 @@ keywords = ["todo", "egui"]
 
 [dependencies]
 anyhow = "1"
-eframe = { version = "0.31", features = ["persistence"] }
-egui = { version = "0.31", features = ["persistence"] }
-egui-notify = "0.19"
-egui-phosphor = "0.9"
-egui_extras = { version = "0.31.1", features = ["image"] }
-egui_file = "0.22"
-log = "0.4.27"
+eframe = { version = "0.33", features = ["persistence"] }
+egui = { version = "0.33", default-features = false, features = ["persistence"] }
+egui-notify = "0.21"
+egui_extras = { version = "0.33", features = ["image"] }
+egui_file = "0.24"
+log = "0.4.28"
 open = "5.3.2"
 serde = { version = "1", features = ["derive"] }
-serde_json = "1"
+serde_json = "=1.0.142"
 simplelog = "0.12.2"
-uuid = { version = "1.16.0", features = ["serde", "v4"] }
+uuid = { version = "1.18.1", features = ["serde", "v4"] }
 
 [dev-dependencies]
-egui_kittest = { version = "0.31", features = ["wgpu", "snapshot"] }
-eframe = { version = "0.31", features = ["wgpu"] }
-tokio = { version = "1.41.0", features = ["time", "rt", "macros"] }
-wgpu = "25"
+egui_kittest = { version = "0.33", features = ["wgpu", "snapshot"] }
+eframe = { version = "0.33", features = ["wgpu"] }
+tokio = { version = "1.48", features = ["time", "rt", "macros"] }
+wgpu = "27"
 
 [build-dependencies]
-regex = "1.11"
+winresource = "0.1"
 
 [lints.rust]
 unsafe_code = "deny"

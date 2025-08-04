@@ -17,11 +17,6 @@ impl App {
             s.spacing.item_spacing = vec2(10.0, std::f32::consts::PI * 1.76643);
         });
 
-        let mut fonts = egui::FontDefinitions::default();
-        egui_phosphor::add_to_fonts(&mut fonts, egui_phosphor::Variant::Regular);
-
-        cc.set_fonts(fonts);
-
         Self::default()
     }
 }
@@ -59,25 +54,25 @@ pub async fn test_main_view() {
         harness.ctx.set_theme(theme);
 
         harness.run();
-        harness.snapshot(&format!("{theme:?}_main_view"));
+        harness.snapshot(format!("{theme:?}/main_view"));
 
         harness
             .get_by_role_and_label(Role::Button, &format!("{PLUS} Add category"))
             .click();
 
         harness.run();
-        harness.snapshot(&format!("{theme:?}_add_category"));
+        harness.snapshot(format!("{theme:?}/add_category"));
 
         harness
             .get_by_role_and_label(Role::Button, &format!("{PLUS} Add item"))
             .click();
 
         harness.run();
-        harness.snapshot(&format!("{theme:?}_add_item"));
+        harness.snapshot(format!("{theme:?}/add_item"));
 
         harness.get_by_role_and_label(Role::Button, " ? ").click();
 
         harness.run();
-        harness.snapshot(&format!("{theme:?}_about_dialog"));
+        harness.snapshot(format!("{theme:?}/about_dialog"));
     }
 }

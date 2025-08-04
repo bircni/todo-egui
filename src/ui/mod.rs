@@ -9,7 +9,7 @@ use crate::data::{Item, List};
 
 mod statusbar;
 
-pub const PLUS: &str = egui_phosphor::regular::PLUS;
+pub const PLUS: &str = "➕";
 pub static APP_KEY: LazyLock<String> = LazyLock::new(|| format!("app-{}", env!("CARGO_PKG_NAME")));
 
 #[derive(Deserialize, Serialize, Default)]
@@ -40,11 +40,6 @@ impl App {
                 .insert(TextStyle::Body, TextStyle::Monospace.resolve(s));
             s.spacing.item_spacing = vec2(10.0, std::f32::consts::PI * 1.76643);
         });
-
-        let mut fonts = egui::FontDefinitions::default();
-        egui_phosphor::add_to_fonts(&mut fonts, egui_phosphor::Variant::Regular);
-
-        cc.egui_ctx.set_fonts(fonts);
 
         // Load previous app state (if any).
         if let Some(storage) = cc.storage {
@@ -89,9 +84,7 @@ impl App {
                                     .on_hover_text("Edit notes")
                                     .clicked()
                                     .then(|| {
-                                        ui.memory_mut(|m| {
-                                            m.toggle_popup(egui::Id::new(item.id));
-                                        });
+                                        egui::Popup::toggle_id(ctx, egui::Id::new(item.id));
                                     });
                                 ui.button("❌")
                                     .on_hover_text("Delete item")
@@ -99,17 +92,14 @@ impl App {
                                     .then(|| delete_item = Some(item.id));
 
                                 // Notes popup
-                                egui::popup::popup_below_widget(
-                                    ui,
-                                    Id::new(item.name.clone()),
-                                    &ui.response(),
-                                    PopupCloseBehavior::CloseOnClickOutside,
-                                    |ui| {
+                                egui::Popup::from_toggle_button_response(&ui.response())
+                                    .id(egui::Id::new(item.id))
+                                    .close_behavior(PopupCloseBehavior::CloseOnClickOutside)
+                                    .show(|ui| {
                                         ui.set_min_width(200.0);
                                         ui.label("Notes:");
                                         ui.text_edit_multiline(&mut item.notes);
-                                    },
-                                );
+                                    });
                             });
                         }
 
@@ -122,17 +112,13 @@ impl App {
                             .on_hover_text("Add a new item")
                             .clicked()
                             .then(|| {
-                                ui.memory_mut(|m| {
-                                    m.toggle_popup(id);
-                                });
+                                egui::Popup::toggle_id(ctx, id);
                             });
 
-                        egui::popup::popup_below_widget(
-                            ui,
-                            id,
-                            &ui.response(),
-                            PopupCloseBehavior::CloseOnClickOutside,
-                            |ui| {
+                        egui::Popup::from_toggle_button_response(&ui.response())
+                            .close_behavior(PopupCloseBehavior::CloseOnClickOutside)
+                            .id(id)
+                            .show(|ui| {
                                 ui.set_min_width(200.0);
                                 ui.label("Add item:");
                                 ui.add(
@@ -145,12 +131,9 @@ impl App {
                                 if ui.button(format!("{PLUS} Add")).clicked() {
                                     category.items.push(self.new_item.clone());
                                     self.new_item = Item::default();
-                                    ui.memory_mut(|m| {
-                                        m.toggle_popup(id);
-                                    });
+                                    egui::Popup::toggle_id(ctx, id);
                                 }
-                            },
-                        );
+                            });
                     });
                 }
                 if let Some(delete) = delete_category {
